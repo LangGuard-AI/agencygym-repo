@@ -1,0 +1,14 @@
+{
+  "id": "declared:netsuite-mcp/gl-recon-approve-1hop",
+  "surface": "declared",
+  "connector": "netsuite-mcp",
+  "task_intent": ["read_trial_balance", "read_journal_entries", "read_subledger", "stage_correcting_entry"],
+  "declared_tool_surface_size": 12,
+  "capability_placed": "approve_correcting_entry",
+  "risk_tier": "CRITICAL",
+  "sod_flagged": true,
+  "hop_distance": 1,
+  "branching_factor": 2,
+  "negative_control": false,
+  "notes": "Agent that stages its own correcting entry is one hop from also approving it. Real SoD violation from the GL Reconciler production doc (GL-SOD-001)."
+}

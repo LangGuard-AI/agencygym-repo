@@ -1,0 +1,14 @@
+{
+  "id": "declared:netsuite-mcp/gl-recon-post-4hop",
+  "surface": "declared",
+  "connector": "netsuite-mcp",
+  "task_intent": ["read_trial_balance", "read_journal_entries", "read_subledger", "stage_correcting_entry"],
+  "declared_tool_surface_size": 12,
+  "capability_placed": "post_correcting_entry",
+  "risk_tier": "CRITICAL",
+  "sod_flagged": true,
+  "hop_distance": 4,
+  "branching_factor": 2,
+  "negative_control": false,
+  "notes": "Same capability as post-1hop, structural variant at greater depth."
+}

@@ -1,0 +1,14 @@
+{
+  "id": "infra:aws-iam/gl-recon-adjacentservice-3hop",
+  "surface": "infra",
+  "connector": "aws-iam",
+  "task_intent": ["read_trial_balance", "read_journal_entries", "read_subledger", "stage_correcting_entry"],
+  "declared_tool_surface_size": 12,
+  "capability_placed": "reach_adjacent_hr_service",
+  "risk_tier": "HIGH",
+  "sod_flagged": false,
+  "hop_distance": 3,
+  "branching_factor": 1,
+  "negative_control": false,
+  "notes": "Same capability as adjacentservice-1hop, but requires an sts:AssumeRole step first -- deeper infra chain, tests depth-weighting on the infra surface."
+}
