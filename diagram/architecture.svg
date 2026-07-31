@@ -1,0 +1,63 @@
+<svg viewBox="0 0 1000 720" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#00E5C8"/>
+    </marker>
+    <marker id="arrowMuted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8892A4"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1000" height="720" fill="#0A0F1E"/>
+
+  <text x="30" y="40" fill="#FFFFFF" font-size="20" font-weight="600">AgencyGym — Architecture</text>
+  <text x="30" y="62" fill="#8892A4" font-size="13">Task Intent is fixed. Everything reachable beyond it is excess. AgencyScore measures the gap; AgencyGym tests whether the gap predicts behavior.</text>
+
+  <!-- Task Intent: the fixed baseline -->
+  <rect x="380" y="100" width="240" height="60" rx="8" fill="#0A0F1E" stroke="#00E5C8" stroke-width="2"/>
+  <text x="500" y="126" fill="#FFFFFF" font-size="14" font-weight="600" text-anchor="middle">Task Intent</text>
+  <text x="500" y="145" fill="#8892A4" font-size="11" text-anchor="middle">declared, fixed — the ruler, not a surface</text>
+
+  <!-- Two surfaces -->
+  <rect x="120" y="220" width="320" height="90" rx="8" fill="#0A0F1E" stroke="#2D6FE8" stroke-width="2"/>
+  <text x="280" y="248" fill="#FFFFFF" font-size="14" font-weight="600" text-anchor="middle">Tool Surface</text>
+  <text x="280" y="268" fill="#8892A4" font-size="11" text-anchor="middle">connectivity + capability</text>
+  <text x="280" y="286" fill="#8892A4" font-size="11" text-anchor="middle">found in a registry — static, readable</text>
+
+  <rect x="560" y="220" width="320" height="90" rx="8" fill="#0A0F1E" stroke="#2D6FE8" stroke-width="2"/>
+  <text x="720" y="248" fill="#FFFFFF" font-size="14" font-weight="600" text-anchor="middle">Infrastructure Surface</text>
+  <text x="720" y="268" fill="#8892A4" font-size="11" text-anchor="middle">shared runtime — IAM, containers, gateways</text>
+  <text x="720" y="286" fill="#8892A4" font-size="11" text-anchor="middle">no registry entry — declared or not</text>
+
+  <path d="M 460 160 L 300 220" stroke="#8892A4" stroke-width="1.5" fill="none" marker-end="url(#arrowMuted)"/>
+  <path d="M 540 160 L 700 220" stroke="#8892A4" stroke-width="1.5" fill="none" marker-end="url(#arrowMuted)"/>
+
+  <!-- AgencyScore: the gap -->
+  <rect x="300" y="350" width="400" height="70" rx="8" fill="#0A0F1E" stroke="#00E5C8" stroke-width="2.5"/>
+  <text x="500" y="378" fill="#00E5C8" font-size="15" font-weight="700" text-anchor="middle">AgencyScore</text>
+  <text x="500" y="398" fill="#8892A4" font-size="11" text-anchor="middle">the measurable gap — computed before deployment, zero execution</text>
+
+  <path d="M 280 310 L 420 350" stroke="#00E5C8" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 720 310 L 580 350" stroke="#00E5C8" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- AgencyGym: the sandbox test -->
+  <rect x="300" y="470" width="400" height="90" rx="8" fill="#0A0F1E" stroke="#2D6FE8" stroke-width="2"/>
+  <text x="500" y="498" fill="#FFFFFF" font-size="14" font-weight="600" text-anchor="middle">AgencyGym Sandbox</text>
+  <text x="500" y="518" fill="#8892A4" font-size="11" text-anchor="middle">excess placed at a known distance — agent runs blind</text>
+  <text x="500" y="536" fill="#8892A4" font-size="11" text-anchor="middle">did it wander? did it capture? did the score predict it?</text>
+
+  <path d="M 500 420 L 500 470" stroke="#00E5C8" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <text x="520" y="450" fill="#8892A4" font-size="10">tested against</text>
+
+  <!-- Feedback loop -->
+  <rect x="720" y="600" width="220" height="60" rx="8" fill="#0A0F1E" stroke="#8892A4" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="830" y="626" fill="#FFFFFF" font-size="12" font-weight="600" text-anchor="middle">Tighten deployment</text>
+  <text x="830" y="644" fill="#8892A4" font-size="10" text-anchor="middle">remove excess, add a gate</text>
+
+  <path d="M 700 530 L 830 600" stroke="#8892A4" stroke-width="1.5" fill="none" stroke-dasharray="4,3" marker-end="url(#arrowMuted)"/>
+  <path d="M 720 630 L 180 630 L 180 385 L 300 385" stroke="#8892A4" stroke-width="1.5" fill="none" stroke-dasharray="4,3" marker-end="url(#arrowMuted)"/>
+  <text x="60" y="510" fill="#8892A4" font-size="10">recompute</text>
+  <text x="60" y="524" fill="#8892A4" font-size="10">AgencyScore</text>
+
+  <text x="30" y="695" fill="#8892A4" font-size="10">Dashed loop = the crash-test cycle: score high → sandbox confirms → tighten → re-score → deploy.</text>
+</svg>
