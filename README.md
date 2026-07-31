@@ -24,6 +24,8 @@ AgencyGym is a sandboxed benchmark that tests whether AgencyScore is real. It pl
 
 Neither means anything alone. A score with no blind test behind it is a classification exercise. A blind test with no prior score is an anecdote. AgencyScore is the prediction; AgencyGym is the check. Fixing a known ground truth in advance and testing it blind is the same discipline ExploitGym uses to validate exploitation capability — applied here to a different question, and a different population of agents (see References).
 
+![AgencyGym architecture: Task Intent as the fixed baseline, Tool Surface and Infrastructure Surface as what's reachable beyond it, AgencyScore as the measured gap, and AgencyGym as the sandbox that tests the gap against real behavior](diagram/architecture.svg)
+
 ### For the enterprise
 
 Before any agent goes into production — a GL reconciliation agent, a support-triage agent, anything wired into real tools and real infrastructure — it can be scored, sandbox-tested, and tightened, the same way a car is crash-tested before it's sold, not after. Excess agency gets caught before it becomes an incident, not after one.
