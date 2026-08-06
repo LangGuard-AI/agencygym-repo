@@ -63,6 +63,8 @@ Every AgencyScore reported in this repository today is derived from the syntheti
 
 Before any agent goes into production — a GL reconciliation agent, a support-triage agent, anything wired into real tools and real infrastructure — it can be run through AgencyGym to get an AgencyScore, and tightened based on what that score shows, the same way a car is crash-tested before it's sold, not after. Excess agency gets caught before it becomes an incident, not after one.
 
+AgencyScore is not computed once and left alone. We intend enterprises to recompute it any time something changes underneath the agent — an infrastructure change, a new harness, a different AI platform, a new agent framework, or even a configuration change. Every one of those changes can open new reachability that didn't exist at the last score. Each deserves its own run, the same way a new vulnerability disclosure triggers a fresh security review rather than relying on the last one.
+
 ### The three surfaces
 
 - **Task Intent** — what the agent is declared to do — the baseline everything else is measured against.

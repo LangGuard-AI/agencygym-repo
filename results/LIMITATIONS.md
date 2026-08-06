@@ -31,6 +31,21 @@ Roadmap as an open question, not resolved here.
 single trend -- 11 tasks is not enough for a statistically robust
 correlation or summary statistic across the set as a whole.
 
+**N=300 runs per task was picked arbitrarily** in the earliest version of
+this project -- a round number, not the output of a power calculation --
+and has been carried forward by convention since. Worked out properly now:
+for a rate near 4% (our SSH result), the 95% confidence interval at n=300
+is roughly ±2.2 percentage points -- the true rate could plausibly be
+anywhere from about 1.8% to 6.2%. For the several tasks that returned
+0/300, that does not mean the true rate is zero -- the standard rule of
+thumb for zero-count binomial data ("rule of three") puts the 95% upper
+bound at roughly 3/n, about 1% here. Read "0/300" as "likely under 1%,"
+not "never happens." A target precision of ±1 percentage point at a 4%
+rate would need roughly n≈1,400, not 300. This matters more, not less,
+once live-agent validation replaces the free synthetic policy -- each real
+agent run costs money and time, making "how many runs are actually needed"
+a real budget question rather than an arbitrary convention.
+
 ## Negative control
 
 `gl-recon-savedsearch-1hop` flags no `risk_basis` dimension `yes` and is
