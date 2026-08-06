@@ -117,7 +117,7 @@ infra:aws-iam/gl-recon-adjacentservice-1hop
 
 90 + 10 = **100**.
 
-A risk dimension is only flagged `yes` where the specific placed capability genuinely satisfies that dimension's condition — never assumed from the connector's category. `trifecta_component`, for example, requires the joint presence of private-data access, untrusted-content exposure, and an external-communication path; most Financial, Cloud, and Data-store tasks won't satisfy that condition through their native tools, the same way our own SSH task tests `privilege_breadth` on a coding-agent connector that has nothing to do with SSH natively. Satisfying a thin dimension on a connector that doesn't naturally support it means constructing a capability that does — placing it deliberately, the same discipline used for every other placement in this dataset — not skipping the cell or forcing a flag that doesn't check out.
+A risk dimension is only flagged `yes` where the specific placed capability genuinely satisfies that dimension's condition — never assumed from the connector's category, and never limited to a connector's native domain either. `trifecta_component` requires the joint presence of private-data access, untrusted-content exposure, and an external-communication path; nothing about a connector's category — Financial, Cloud, Data-store, Communications — determines whether a task built on that connector can test it. A NetSuite-based task can test `trifecta_component` the same way our SSH task tests `privilege_breadth` on a coding-agent connector that has nothing to do with SSH natively: by deliberately constructing a capability, on the declared or infrastructure surface, that genuinely satisfies the condition — not by relying on whichever tools the connector happens to ship with. Every connector category gets real, constructed coverage across all three dimensions, using this same discipline throughout — not just the dimensions its native tools happen to suggest.
 
 See `data/task_ids/v1.txt` for the current task list and `docs/methodology.md` for full construction methodology.
 
@@ -127,12 +127,11 @@ v1, early scaffold. 11 tasks, built around two real scenarios: GL reconciliation
 
 ### Roadmap
 
-- Starter dataset expansion: grow from 11 to the full 100-task set described above, filling every cell of the connector × risk_basis × reachability coverage table
-- Endpoint-level extension: extend AgencyScore to IDE agents, coding assistants, and CLI tools directly — scoring an endpoint's own excess reachability the same way v1 scores a business-process agent
-- Reachability granularity: collapsing hop-distance to `direct`/`transitive` is simpler, but our own early run showed 3-hop and 4-hop transitive cases behaved differently from each other (0.3% vs 0% capture) — worth checking whether the binary label loses signal worth keeping
-- Live-agent validation: replace the synthetic policy with a real foundation-model agent
-- Trifecta coverage: v1 has no task testing `trifecta_component` yet; needs dedicated coverage before the dimension means much as a benchmark category
-- Enterprise leaderboard: fix the AgencyGym task set and rank agents per `risk_basis` dimension — letting an enterprise compare every candidate agent's per-dimension AgencyScore, side by side, before any of them are deployed
+- **Broaden coverage** — more connectors, more constructed capabilities, closing gaps like `trifecta_component` that v1 doesn't test yet
+- **Validate against real agents** — replace the synthetic policy with live foundation-model runs
+- **Extend to the endpoint** — score IDE agents, CLIs, and coding assistants directly, not just backend business agents
+- **Sharpen the measurement** — refine reachability granularity and sample size as real data comes in
+- **Enable comparison** — let enterprises rank multiple agents against the same task set, side by side, before deployment
 
 We're building this in public. If you work on agent security, benchmark design, or graph-based reachability analysis, we're looking for collaborators to help extend and pressure-test it.
 
