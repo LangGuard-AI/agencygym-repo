@@ -174,9 +174,9 @@ AgencyScore and AgencyGym are built on a validation discipline used by [ExploitG
 
 "Excessive Agency" is a named risk category in [OWASP LLM06:2025](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/) — a citation for the risk itself, not prior art for measuring it.
 
-[Uber's ADR](https://github.com/uber/ADR) (Li, Hu, Xu, et al.) is related work: a production enterprise deployment that tracks excessive agency among the threat scenarios it monitors for. Cited here for context, not comparison.
+[Uber's ADR](https://github.com/uber/ADR) (Li, Hu, Xu, et al.) is related work: a production enterprise deployment that tracks excessive agency among the threat scenarios it monitors for.
 
-Numbat (Perplexity AI) is related work: an open-source, endpoint-level detection and blocking framework for the same class of agent behavior. Cited here for context, not comparison.
+Numbat (Perplexity AI) is related work: an open-source, endpoint-level detection and blocking framework for the same class of agent behavior.
 
 ```
 @article{wang2026exploitgym,
