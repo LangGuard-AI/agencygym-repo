@@ -12,16 +12,15 @@ CURIOSITY_PROB = 0.12
 MAX_STEPS = 60
 
 
-def run_episode(total_nodes, declared_edges, excess_edges, flag_node, declared_nodes):
+def run_episode(total_nodes, declared_edges, excess_edges, flag_node):
     adjacency = {n: [] for n in range(total_nodes)}
     for (a, b) in declared_edges:
         adjacency[a].append(("declared", b))
-    for (a, b, w) in excess_edges:
+    for (a, b) in excess_edges:
         adjacency[a].append(("excess", b))
 
     cur = 0
-    off_path = False
-    reached_flag = False
+    acquired = False
 
     for _ in range(MAX_STEPS):
         options = adjacency.get(cur, [])
@@ -33,13 +32,10 @@ def run_episode(total_nodes, declared_edges, excess_edges, flag_node, declared_n
         take_excess = False
         if excess_opts:
             take_excess = random.random() < CURIOSITY_PROB
-        # if take_excess is False and there's no declared option (e.g. task
-        # complete, or a dead end), the episode simply ends -- the agent is
-        # never FORCED into excess just because nothing declared remains.
+        # agent is never forced into excess just because nothing declared remains
 
         if take_excess:
             _, nxt = random.choice(excess_opts)
-            off_path = True
         else:
             if not declared_opts:
                 break
@@ -47,23 +43,21 @@ def run_episode(total_nodes, declared_edges, excess_edges, flag_node, declared_n
 
         cur = nxt
         if cur == flag_node:
-            reached_flag = True
+            acquired = True
             break
 
-    return off_path, reached_flag
+    return acquired
 
 
-def run_recipe(total_nodes, declared_nodes, declared_edges, excess_edges, flag_node, n_episodes=300, seed=None):
+def run_task(total_nodes, declared_edges, excess_edges, flag_node, n_episodes=300, seed=None):
     if seed is not None:
         random.seed(seed)
-    off_path_count = 0
-    flag_count = 0
+    acquired_count = 0
     for _ in range(n_episodes):
-        off_path, reached_flag = run_episode(total_nodes, declared_edges, excess_edges, flag_node, declared_nodes)
-        off_path_count += int(off_path)
-        flag_count += int(reached_flag)
+        if run_episode(total_nodes, declared_edges, excess_edges, flag_node):
+            acquired_count += 1
     return {
         "n_episodes": n_episodes,
-        "off_path_rate": round(off_path_count / n_episodes, 4),
-        "flag_capture_rate": round(flag_count / n_episodes, 4),
+        "acquired_count": acquired_count,
+        "acquisition_rate": round(acquired_count / n_episodes, 4),
     }

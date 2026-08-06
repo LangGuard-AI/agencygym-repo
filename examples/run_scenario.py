@@ -2,102 +2,72 @@
 """
 examples/run_scenario.py
 ==========================
-Loads every recipe in recipes/, computes AgencyScore (both linear and
-combinatorial depth-weighting), runs the synthetic policy 300x per recipe,
-and reports whether each scoring version predicts observed behavior.
+Loads every task in data/task_ids/v1.txt, builds its graph, runs the
+synthetic policy N times, and writes results/v1/raw.json.
 
 LIMITATION: the policy is a calibrated synthetic stand-in for a live LLM
 agent, not a live model. See results/LIMITATIONS.md.
 """
 import json
-import glob
 import os
-import statistics
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 from agencyscore import graph, policy
 
-RECIPE_DIR = os.path.join(os.path.dirname(__file__), "..", "recipes")
+TASKS_DIR = os.path.join(os.path.dirname(__file__), "..", "tasks")
+TASK_LIST = os.path.join(os.path.dirname(__file__), "..", "data", "task_ids", "v1.txt")
 RESULTS_DIR = os.path.join(os.path.dirname(__file__), "..", "results", "v1")
 
 
-def pearson(xs, ys):
-    n = len(xs)
-    mx, my = statistics.mean(xs), statistics.mean(ys)
-    cov = sum((x - mx) * (y - my) for x, y in zip(xs, ys))
-    sx = (sum((x - mx) ** 2 for x in xs)) ** 0.5
-    sy = (sum((y - my) ** 2 for y in ys)) ** 0.5
-    if sx == 0 or sy == 0:
-        return float("nan")
-    return cov / (sx * sy)
+def load_task(task_id):
+    slug = task_id.split("/")[-1]
+    path = os.path.join(TASKS_DIR, f"{slug}.json")
+    with open(path) as f:
+        return json.load(f)
 
 
-def main(n_runs=300):
-    recipe_files = sorted(glob.glob(os.path.join(RECIPE_DIR, "*.json")))
+def main(task_list_path=TASK_LIST, n_runs=300):
+    with open(task_list_path) as f:
+        task_ids = [line.strip() for line in f if line.strip()]
+
     results = []
-
-    for path in recipe_files:
-        with open(path) as f:
-            recipe = json.load(f)
-
-        total_nodes, declared_nodes, declared_edges, excess_edges, flag_node = graph.build_graph(recipe)
-
-        score_linear = graph.compute_score(recipe, declared_edges, excess_edges, weighting="linear")
-        score_combo = graph.compute_score(recipe, declared_edges, excess_edges, weighting="combinatorial")
-
-        sandbox = policy.run_recipe(
-            total_nodes, declared_nodes, declared_edges, excess_edges, flag_node,
-            n_episodes=n_runs, seed=graph.stable_seed(recipe["id"]) + 1  # offset from graph-build seed
+    for task_id in task_ids:
+        task = load_task(task_id)
+        total_nodes, declared_nodes, declared_edges, excess_edges, flag_node = graph.build_graph(task)
+        sandbox = policy.run_task(
+            total_nodes, declared_edges, excess_edges, flag_node,
+            n_episodes=n_runs, seed=graph.stable_seed(task["task_id"]) + 1
         )
-
         results.append({
-            "id": recipe["id"],
-            "surface": recipe["surface"],
-            "capability": recipe["capability_placed"],
-            "hop_distance": recipe["hop_distance"],
-            "risk_tier": recipe["risk_tier"],
-            "negative_control": recipe["negative_control"],
-            "score_linear": score_linear["score"],
-            "score_combinatorial": score_combo["score"],
-            "off_path_rate": sandbox["off_path_rate"],
-            "flag_capture_rate": sandbox["flag_capture_rate"],
+            "task_id": task["task_id"],
+            "surface": task["surface"],
+            "capability_placed": task["capability_placed"],
+            "reachability": task["reachability"],
+            "negative_control": task["negative_control"],
+            "risk_basis": task["risk_basis"],
+            "n_episodes": sandbox["n_episodes"],
+            "acquired_count": sandbox["acquired_count"],
         })
 
     os.makedirs(RESULTS_DIR, exist_ok=True)
-    with open(os.path.join(RESULTS_DIR, "raw.json"), "w") as f:
+    out_path = os.path.join(RESULTS_DIR, "raw.json")
+    with open(out_path, "w") as f:
         json.dump(results, f, indent=2)
 
-    # correlations
-    linear_scores = [r["score_linear"] for r in results]
-    combo_scores = [r["score_combinatorial"] for r in results]
-    off_path = [r["off_path_rate"] for r in results]
-    capture = [r["flag_capture_rate"] for r in results]
-
-    corr = {
-        "linear_vs_offpath": round(pearson(linear_scores, off_path), 3),
-        "linear_vs_capture": round(pearson(linear_scores, capture), 3),
-        "combinatorial_vs_offpath": round(pearson(combo_scores, off_path), 3),
-        "combinatorial_vs_capture": round(pearson(combo_scores, capture), 3),
-    }
-
-    print(f"{'id':50} {'surface':9} {'hop':4} {'lin':>7} {'combo':>7} {'offpath%':>9} {'capture%':>9}")
+    print(f"{'task_id':55} {'surface':9} {'reach':11} {'acquired/N':>12}")
     for r in results:
-        print(f"{r['id']:50} {r['surface']:9} {r['hop_distance']:4} "
-              f"{r['score_linear']:7.2f} {r['score_combinatorial']:7.2f} "
-              f"{r['off_path_rate']*100:8.1f}% {r['flag_capture_rate']*100:8.1f}%")
+        frac = f"{r['acquired_count']}/{r['n_episodes']}"
+        print(f"{r['task_id']:55} {r['surface']:9} {r['reachability']:11} {frac:>12}")
 
-    print()
-    print(f"n = {len(results)} instances, {n_runs} runs each")
-    print(f"Linear weighting        -> off-path r={corr['linear_vs_offpath']}, capture r={corr['linear_vs_capture']}")
-    print(f"Combinatorial weighting -> off-path r={corr['combinatorial_vs_offpath']}, capture r={corr['combinatorial_vs_capture']}")
-
-    with open(os.path.join(RESULTS_DIR, "correlations.json"), "w") as f:
-        json.dump(corr, f, indent=2)
-
-    return results, corr
+    print(f"\nWrote {out_path}")
+    return results
 
 
 if __name__ == "__main__":
-    n = int(sys.argv[1]) if len(sys.argv) > 1 else 300
-    main(n_runs=n)
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("task_list", nargs="?", default=TASK_LIST)
+    parser.add_argument("--runs", type=int, default=300)
+    args = parser.parse_args()
+    main(task_list_path=args.task_list, n_runs=args.runs)

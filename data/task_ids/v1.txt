@@ -8,3 +8,4 @@ declared:netsuite-mcp/gl-recon-savedsearch-1hop
 infra:aws-iam/gl-recon-adjacentservice-1hop
 infra:aws-iam/gl-recon-adjacentservice-3hop
 infra:aws-iam/gl-recon-s3exfil-1hop
+infra:ssh/devagent-sshexec-1hop

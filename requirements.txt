@@ -1,0 +1,2 @@
+# v1 uses only the Python standard library (json, random, statistics, glob).
+# No external dependencies required.
