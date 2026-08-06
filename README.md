@@ -2,11 +2,9 @@
 
 ### The problem
 
-Agents don't just execute a task. They have a tendency to probe, wander, and find new, unexpected paths to solve it — reaching for capability nobody pointed them toward, simply because it's reachable. That's their power. We call it Agency. OWASP names this risk directly as [LLM06:2025 — Excessive Agency](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/), and industry deployments are starting to track it as a threat scenario — Uber's ADR system, for example, lists it among the risks it monitors for in production.
+Agents don't just execute a task. They have a tendency to probe, wander, and find new, unexpected paths to solve it — reaching for capability nobody pointed them toward, simply because it's reachable. That's their power. We call it Agency. OWASP names this risk directly as [LLM06:2025 — Excessive Agency](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/).
 
 This proliferation is happening fastest at the endpoint. An IDE agent, a coding assistant, a CLI, a cowork tool — where an MCP host is plugged into any number of MCP servers, each exposing tools for file I/O, API calls, database access, and more. These MCP-based AI tools, because of their high agency, pose three types of risks: 1) unauthorized system access, 2) data exfiltration and leakage, and 3) operational disruption.
-
-Uber describes excessive agency this way in their ADR project report: "A simple ask can spiral into complex actions. Agent fails to auth due to expired certificate – the right action is to ask the user to re-authenticate. Instead, the agent dumps credentials everywhere, triggers EDR alerts, finds SSH keys and explores devpods."
 
 OpenAI's incident report on Hugging Face states their models seeking agency at all costs: "To gain access, the models identified and exploited a zero-day vulnerability (which we've now responsibly disclosed to the vendor) in the package registry cache proxy. With this access, our models performed a series of privilege escalation and lateral movement actions in our research testing environment until the models reached a node with Internet access."
 
