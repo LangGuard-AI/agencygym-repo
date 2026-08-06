@@ -109,7 +109,7 @@ infra:aws-iam/gl-recon-adjacentservice-1hop
 
 `risk_basis` fixes three dimensions in v1 — `privilege_breadth`, `business_criticality`, `trifecta_component` — each set independently to `yes`, `no`, or `empty`. AgencyGym fixes only the *shape*; the values inside `risk_basis` are declared by whoever writes the task, not judged by AgencyGym. The sandbox doesn't check whether a `yes` is "correct" or hold a house opinion on what counts as dangerous. `empty` means a dimension wasn't evaluated for this task, distinct from `no` (evaluated, doesn't apply) — defaulting an unevaluated dimension to `no` would hide that gap rather than show it.
 
-**Constructing a 100-task starter set:** v1 ships 11 tasks, all built around one production scenario. A starter set large enough to demonstrate real extensibility is structured along two axes, deliberately crossed rather than accumulated ad hoc:
+**The 100-task starter set (v2):** v1 shipped 11 tasks, built around two real scenarios. v2 (`data/task_ids/v2.txt`) fills that out into a starter set large enough to demonstrate real extensibility, structured along two axes, deliberately crossed rather than accumulated ad hoc:
 
 - **15 connectors across 5 categories** — financial/business-record (e.g. NetSuite, SAP, QuickBooks), cloud infrastructure (AWS IAM, GCP IAM, Azure RBAC), dev/endpoint (SSH, GitHub, GitLab), communications (Gmail, Slack, Teams), data-store (Postgres, Snowflake, MongoDB)
 - **3 distinct capability variants per connector, each tested at both `direct` and `transitive` reachability** — 15 × 3 × 2 = 90 tasks
@@ -117,17 +117,19 @@ infra:aws-iam/gl-recon-adjacentservice-1hop
 
 90 + 10 = **100**.
 
-A risk dimension is only flagged `yes` where the specific placed capability genuinely satisfies that dimension's condition — never assumed from the connector's category, and never limited to a connector's native domain either. `trifecta_component` requires the joint presence of private-data access, untrusted-content exposure, and an external-communication path; nothing about a connector's category — Financial, Cloud, Data-store, Communications — determines whether a task built on that connector can test it. A NetSuite-based task can test `trifecta_component` the same way our SSH task tests `privilege_breadth` on a coding-agent connector that has nothing to do with SSH natively: by deliberately constructing a capability, on the declared or infrastructure surface, that genuinely satisfies the condition — not by relying on whichever tools the connector happens to ship with. Every connector category gets real, constructed coverage across all three dimensions, using this same discipline throughout — not just the dimensions its native tools happen to suggest.
+A risk dimension is only flagged `yes` where the specific placed capability genuinely satisfies that dimension's condition — never assumed from the connector's category, and never limited to a connector's native domain either. `trifecta_component` requires the joint presence of private-data access, untrusted-content exposure, and an external-communication path; nothing about a connector's category — Financial, Cloud, Data-store, Communications — determines whether a task built on that connector can test it. Our QuickBooks task tests `trifecta_component` the same way our SSH task tests `privilege_breadth` on a coding-agent connector that has nothing to do with SSH natively: by deliberately constructing a capability, on the declared or infrastructure surface, that genuinely satisfies the condition — not by relying on whichever tools the connector happens to ship with.
 
-See `data/task_ids/v1.txt` for the current task list and `docs/methodology.md` for full construction methodology.
+**Honest gap, not smoothed over:** in v2, `trifecta_component` is genuinely tested on Financial (QuickBooks), Cloud (AWS IAM), Dev/endpoint (GitHub, SSH), and all three Communications connectors — but not yet on any Data-store connector (Postgres, Snowflake, MongoDB). Every connector category is meant to get real, constructed coverage across all three dimensions; this one category isn't there yet, and it's named here rather than left for someone else to discover.
+
+See `data/task_ids/v1.txt` for the original 11-task list, `data/task_ids/v2.txt` for the full 100-task set, and `docs/methodology.md` for full construction methodology.
 
 ### Status
 
-v1, early scaffold. 11 tasks, built around two real scenarios: GL reconciliation on Oracle NetSuite (10 tasks) and a coding agent with shared devpod infrastructure (1 task, SSH). Not yet validated against a live foundation-model agent — current results use a calibrated synthetic policy standing in for one (see `results/LIMITATIONS.md`).
+v1: 11 tasks, built around two real scenarios (GL reconciliation on Oracle NetSuite, and a coding agent with shared devpod infrastructure). v2: the full 100-task starter set described above, spanning 15 connectors across 5 categories. Neither has been validated against a live foundation-model agent — current results use a calibrated synthetic policy standing in for one (see `results/LIMITATIONS.md`).
 
 ### Roadmap
 
-- **Broaden coverage** — more connectors, more constructed capabilities, closing gaps like `trifecta_component` that v1 doesn't test yet
+- **Broaden coverage** — v2 closed most of the `trifecta_component` gap (Financial, Cloud, Dev/endpoint, Communications); Data-store (Postgres, Snowflake, MongoDB) still has none. More connectors and constructed capabilities beyond the initial 15 remain open too.
 - **Validate against real agents** — replace the synthetic policy with live foundation-model runs
 - **Extend to the endpoint** — score IDE agents, CLIs, and coding assistants directly, not just backend business agents
 - **Sharpen the measurement** — refine reachability granularity and sample size as real data comes in
@@ -146,6 +148,7 @@ Each task is one self-contained JSON file — a prompt, a declared server list, 
 pip install -r requirements.txt
 
 # 2. Run the synthetic policy against every task N times (see LIMITATIONS)
+#    use v1.txt for the original 11 tasks, v2.txt for the full 100-task set
 python examples/run_scenario.py data/task_ids/v1.txt --runs 300
 
 # 3. For each task's flagged risk_basis dimensions, compute the observed
@@ -156,12 +159,13 @@ python -m agencyscore.evaluate results/v1/
 ## Repository layout
 
 ```
-data/task_ids/v1.txt      canonical task list
+data/task_ids/v1.txt      original 11-task list
+data/task_ids/v2.txt      full 100-task starter set (15 connectors x 3 capabilities x 2 reachability + 10 negative controls)
 tasks/                    one file per task: declared Task Intent,
                           Tool Surface, Infrastructure Surface, reachability, risk_basis
 src/agencyscore/          scoring code
-examples/run_scenario.py  runner: executes an agent/policy against a task
-results/                  run output + findings per task
+examples/run_scenario.py  runner: executes an agent/policy against a task list
+results/                  run output + findings, one subdirectory per task-list version
 docs/methodology.md       full construction and scoring methodology
 diagram/                  architecture diagram
 ```

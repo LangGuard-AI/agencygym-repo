@@ -17,7 +17,11 @@ from agencyscore import graph, policy
 
 TASKS_DIR = os.path.join(os.path.dirname(__file__), "..", "tasks")
 TASK_LIST = os.path.join(os.path.dirname(__file__), "..", "data", "task_ids", "v1.txt")
-RESULTS_DIR = os.path.join(os.path.dirname(__file__), "..", "results", "v1")
+
+
+def results_dir_for(task_list_path):
+    version = os.path.splitext(os.path.basename(task_list_path))[0]  # "v1" or "v2"
+    return os.path.join(os.path.dirname(__file__), "..", "results", version)
 
 
 def load_task(task_id):
@@ -50,8 +54,8 @@ def main(task_list_path=TASK_LIST, n_runs=300):
             "acquired_count": sandbox["acquired_count"],
         })
 
-    os.makedirs(RESULTS_DIR, exist_ok=True)
-    out_path = os.path.join(RESULTS_DIR, "raw.json")
+    os.makedirs(results_dir_for(task_list_path), exist_ok=True)
+    out_path = os.path.join(results_dir_for(task_list_path), "raw.json")
     with open(out_path, "w") as f:
         json.dump(results, f, indent=2)
 
