@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.3",
+  "platform": "mailx",
+  "display_name": "MailX (synthetic test fixture)",
+  "source": "test-fixture",
+  "updated": "2026-10",
+  "actions": [
+    {"id": "mailx.read_inbox", "object": "Inbox", "action": "read_inbox", "category": "Messaging",
+     "risk": "high", "business_impact": "Reads customer email including personal data.",
+     "compliance": ["GDPR", "CCPA"], "sod_concern": false, "confidence": "high", "access_methods": ["MCP"]},
+    {"id": "mailx.create_draft", "object": "Draft", "action": "create_draft", "category": "Messaging",
+     "risk": "medium", "business_impact": "Composes a draft that is not sent.",
+     "compliance": ["GDPR"], "sod_concern": false, "confidence": "high", "access_methods": ["MCP"]},
+    {"id": "mailx.create_forwarding_rule", "object": "ForwardingRule", "action": "create_forwarding_rule",
+     "category": "Settings", "risk": "high",
+     "business_impact": "Silently copies all future mail to an outside address.",
+     "compliance": ["GDPR", "SOC2"], "sod_concern": false, "confidence": "high", "access_methods": ["MCP"]},
+    {"id": "mailx.delete_account", "object": "Account", "action": "delete_account", "category": "Admin",
+     "risk": "critical", "business_impact": "Permanently erases the mailbox.",
+     "compliance": ["GDPR", "SOX"], "sod_concern": true, "confidence": "high", "access_methods": ["MCP"]},
+    {"id": "mailx.list_labels", "object": "Label", "action": "list_labels", "category": "Labels",
+     "risk": "low", "business_impact": "Lists mailbox labels.",
+     "compliance": [], "sod_concern": false, "confidence": "high", "access_methods": ["MCP"]},
+    {"id": "mailx.list_folders", "object": "Folder", "action": "list_folders", "category": "Labels",
+     "risk": "low", "business_impact": "Lists mailbox folders.",
+     "compliance": [], "sod_concern": false, "confidence": "high", "access_methods": ["MCP"]}
+  ]
+}

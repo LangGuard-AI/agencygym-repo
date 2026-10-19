@@ -1,0 +1,9 @@
+{
+  "name": "Support Email Workflow",
+  "user_prompt": "Check the support inbox and draft replies to any unanswered customer questions.",
+  "category": "support_email_workflow",
+  "id_prefix": "comm",
+  "declared_actions": ["gmail.search_threads", "gmail.create_draft"],
+  "candidate_platforms": ["slack"],
+  "expected_tools": ["read_inbox", "draft_reply"]
+}

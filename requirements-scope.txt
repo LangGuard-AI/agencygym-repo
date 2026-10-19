@@ -1,0 +1,3 @@
+# Only needed to read SCOPE's .yml platform files with agencyscore.scope_to_task.
+# The scoring engine and the runner stay standard-library only (requirements.txt).
+PyYAML>=6.0
