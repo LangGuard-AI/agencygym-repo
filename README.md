@@ -128,6 +128,7 @@ See `data/task_ids/v2.txt` for the full task list, `docs/methodology.md` for ful
 ### Roadmap
 
 - **Broaden coverage** — v2 closed most of the `trifecta_component` gap (Financial, Cloud, Dev/endpoint, Communications); Data-store (Postgres, Snowflake, MongoDB) still has none. More connectors and constructed capabilities beyond the initial 15 remain open too.
+- **Generate tasks from SCOPE** — first version in `src/agencyscore/scope_to_task.py` (MCP tool surface, rule-based, review before use); next: infrastructure surface, wider `risk_basis` dimensions, and checking the rules against real agent runs
 - **Validate against real agents** — replace the synthetic policy with live foundation-model runs
 - **Extend to the endpoint** — score IDE agents, CLIs, and coding assistants directly, not just backend business agents
 - **Sharpen the measurement** — refine reachability granularity and sample size as real data comes in
@@ -153,6 +154,21 @@ python examples/run_scenario.py data/task_ids/v2.txt --runs 3000
 python -m agencyscore.evaluate results/v2/
 ```
 
+### Generating a task from SCOPE (optional)
+
+[SCOPE](https://scope-mcp.langguard.ai) classifies every action of an MCP server (risk level, regulatory regimes, segregation-of-duties). `scope_to_task` turns that classification into a task file: it picks one high-risk action the agent was never declared to use as the placed capability, derives `risk_basis`, and writes the task in the v2 shape. It prints a reason for every decision and writes nothing unless you pass `--write`.
+
+```bash
+pip install -r requirements-scope.txt       # PyYAML, only for reading SCOPE's .yml files
+python examples/scope_to_task.py examples/agents/coding-agent-github.json --fetch --list-candidates
+python examples/scope_to_task.py examples/agents/coding-agent-github.json --fetch \
+    --reachability both --write --list-file data/task_ids/scope_demo.txt
+python examples/run_scenario.py data/task_ids/scope_demo.txt --runs 3000
+python -m agencyscore.evaluate results/scope_demo/
+```
+
+See `docs/scope-to-task.md` for the rules and their limits. Tests: `python -m unittest discover -s tests`.
+
 ## Repository layout
 
 ```
@@ -161,6 +177,9 @@ tasks/                    one file per task: declared Task Intent,
                           Tool Surface, Infrastructure Surface, reachability, risk_basis
 src/agencyscore/          scoring code
 examples/run_scenario.py  runner: executes an agent/policy against a task list
+examples/scope_to_task.py SCOPE -> task translator (see docs/scope-to-task.md)
+examples/agents/          example agent specs for the translator
+tests/                    unit tests (standard library): python -m unittest discover -s tests
 results/                  run output + findings
 docs/methodology.md       full construction and scoring methodology
 docs/constructing-a-live-sandbox.md   WIP design doc for a real, non-simulated sandbox
